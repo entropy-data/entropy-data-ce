@@ -69,7 +69,7 @@
       "defaultValue": "hello@entropy-data.com",
       "minLength": 3,
       "metadata": {
-        "description": "The sender email address for data mesh manager emails. For many email providers, such as SendGrid, that must be a verified sender email address."
+        "description": "The sender email address for Entropy Data emails. For many email providers, such as SendGrid, that must be a verified sender email address."
       }
     },
     "containerImageUrl": {

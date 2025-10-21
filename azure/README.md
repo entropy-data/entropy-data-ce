@@ -3,7 +3,7 @@ Azure Deployment Template
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fentropy-data%2Fentropy-data-ce%2Fmain%2Fazure%2Fentropy-data-ce.json)
 
-This deployment templates can be used to deploy Data Mesh Manager to Azure.
+This deployment templates can be used to deploy Entropy Data to Azure.
 
 It is coded as a [bicep file](entropy-data-ce.bicep), and comes with a generated [Azure Resource Manager template](entropy-data-ce.json) that can be used directly in Azure deployments.
 

@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'CloudFormation template to provision the Data Mesh Manager on AWS App Runner with an Amazon RDS PostgreSQL database'
+Description: 'CloudFormation template to provision the Entropy Data on AWS App Runner with an Amazon RDS PostgreSQL database'
 
 Parameters:
   DBInstanceIdentifier:
@@ -27,7 +27,7 @@ Parameters:
   SuperAdmins:
     Type: String
     Default: 'mail@example.com'
-    Description: 'Super admins can do anything in Data Mesh Manager'
+    Description: 'Super admins can do anything in Entropy Data'
   AllocatedStorage:
     Type: Number
     Default: "20"
@@ -157,7 +157,7 @@ Resources:
       ServiceName: !Ref AppRunnerServiceName
       SourceConfiguration:
         ImageRepository:
-          ImageIdentifier: public.ecr.aws/z3b7c0x3/entropy-data-ce:latest
+          ImageIdentifier: public.ecr.aws/s4e5k7s9/entropy-data-ce:latest
           ImageRepositoryType: 'ECR_PUBLIC'
           ImageConfiguration:
             RuntimeEnvironmentVariables:

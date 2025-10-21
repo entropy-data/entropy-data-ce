@@ -24,7 +24,7 @@ param smtpBasicAuth bool = true
 param smtpStarttls bool = true
 
 @minLength(3)
-@description('The sender email address for data mesh manager emails. For many email providers, such as SendGrid, that must be a verified sender email address.')
+@description('The sender email address for Entropy Data emails. For many email providers, such as SendGrid, that must be a verified sender email address.')
 param mailFrom string = 'hello@entropy-data.com'
 
 @description('The Docker container image URL.')
