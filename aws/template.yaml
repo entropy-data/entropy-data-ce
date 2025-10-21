@@ -4,7 +4,7 @@ Description: 'CloudFormation template to provision the Data Mesh Manager on AWS 
 Parameters:
   DBInstanceIdentifier:
     Type: String
-    Default: datamesh-manager-postgres
+    Default: entropy-data-postgres
     Description: 'Database instance identifier'
   DBName:
     Type: String
@@ -34,7 +34,7 @@ Parameters:
     Description: 'Allocated storage in GB'
   AppRunnerServiceName:
     Type: String
-    Default: datamesh-manager-app-runner-service
+    Default: entropy-data-app-runner-service
     Description: 'App Runner service name'
   SMTPHost:
     Type: String
@@ -157,7 +157,7 @@ Resources:
       ServiceName: !Ref AppRunnerServiceName
       SourceConfiguration:
         ImageRepository:
-          ImageIdentifier: public.ecr.aws/z3b7c0x3/datamesh-manager-ce:latest
+          ImageIdentifier: public.ecr.aws/z3b7c0x3/entropy-data-ce:latest
           ImageRepositoryType: 'ECR_PUBLIC'
           ImageConfiguration:
             RuntimeEnvironmentVariables:

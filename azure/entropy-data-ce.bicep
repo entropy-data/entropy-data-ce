@@ -2,7 +2,7 @@
 param location string = resourceGroup().location
 
 @description('The name of the web app. This will also be used for the default domain name \${webAppName}.azurewebsites.net, so it must be unique.')
-param webAppName string = 'datameshmanager-${resourceGroup().name}'
+param webAppName string = 'entropydata-${resourceGroup().name}'
 
 @description('SMTP server host. You can use SendGrid or any other SMTP server.')
 param smtpHost string = 'smtp.sendgrid.net'
@@ -25,10 +25,10 @@ param smtpStarttls bool = true
 
 @minLength(3)
 @description('The sender email address for data mesh manager emails. For many email providers, such as SendGrid, that must be a verified sender email address.')
-param mailFrom string = 'hello@datamesh-manager.com'
+param mailFrom string = 'hello@entropy-data.com'
 
 @description('The Docker container image URL.')
-param containerImageUrl string = 'datameshmanager/datamesh-manager-ce:latest'
+param containerImageUrl string = 'entropydata/entropy-data-ce:latest'
 
 @description('App Service plan pricing tier. Should have 4 GB.')
 // P1v2 = 1vCPU, 3.5 GB, $83/month
@@ -42,7 +42,7 @@ param postgresComputeTierSizeSku string = 'Standard_D2s_v3'
 param postgresStorageSizeGB int = 128
 
 @description('The name of the PostgreSQL server.')
-param postgresServerName string = 'datameshmanager-postgres-${resourceGroup().name}'
+param postgresServerName string = 'entropydata-postgres-${resourceGroup().name}'
 
 @description('The administrator username of the PostgreSQL server.')
 param postgresAdminUsername string = 'adminuser'
@@ -55,7 +55,7 @@ param postgresAdminPassword string = newGuid()
 param databaseName string = 'postgres'
 
 @description('The virtual network name.')
-param vnetName string = 'datameshmanager-vnet'
+param vnetName string = 'entropydata-vnet'
 
 @description('The address prefix for the virtual network.')
 param vnetAddressPrefix string = '10.0.0.0/16'
@@ -309,7 +309,7 @@ resource privateDnsZones_privatelink_postgres_dblink 'Microsoft.Network/privateD
 
 // // Email Communication Service
 // resource emailService 'Microsoft.Communication/emailServices@2023-03-31' = {
-//   name: 'datameshmanager-es'
+//   name: 'entropydata-es'
 //   location: 'global'
 //   properties: {
 //     dataLocation: 'Europe'
@@ -339,7 +339,7 @@ resource privateDnsZones_privatelink_postgres_dblink 'Microsoft.Network/privateD
 
 // // Communication Service
 // resource communcationService 'Microsoft.Communication/communicationServices@2023-03-31' = {
-//   name: 'datameshmanager-cs'
+//   name: 'entropydata-cs'
 //   location: 'global'
 //   properties: {
 //     dataLocation: 'Europe'

@@ -1,6 +1,6 @@
 services:
   app:
-    image: datameshmanager/datamesh-manager-ce:latest
+    image: entropydata/entropy-data-ce:latest
     restart: always
     environment:
       - APPLICATION_HOST_WEB=http://localhost:8081

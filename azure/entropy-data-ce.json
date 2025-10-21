@@ -18,7 +18,7 @@
     },
     "webAppName": {
       "type": "string",
-      "defaultValue": "[format('datameshmanager-{0}', resourceGroup().name)]",
+      "defaultValue": "[format('entropydata-{0}', resourceGroup().name)]",
       "metadata": {
         "description": "The name of the web app. This will also be used for the default domain name ${webAppName}.azurewebsites.net, so it must be unique."
       }
@@ -66,7 +66,7 @@
     },
     "mailFrom": {
       "type": "string",
-      "defaultValue": "hello@datamesh-manager.com",
+      "defaultValue": "hello@entropy-data.com",
       "minLength": 3,
       "metadata": {
         "description": "The sender email address for data mesh manager emails. For many email providers, such as SendGrid, that must be a verified sender email address."
@@ -74,7 +74,7 @@
     },
     "containerImageUrl": {
       "type": "string",
-      "defaultValue": "datameshmanager/datamesh-manager-ce:latest",
+      "defaultValue": "entropydata/entropy-data-ce:latest",
       "metadata": {
         "description": "The Docker container image URL."
       }
@@ -102,7 +102,7 @@
     },
     "postgresServerName": {
       "type": "string",
-      "defaultValue": "[format('datameshmanager-postgres-{0}', resourceGroup().name)]",
+      "defaultValue": "[format('entropydata-postgres-{0}', resourceGroup().name)]",
       "metadata": {
         "description": "The name of the PostgreSQL server."
       }
@@ -130,7 +130,7 @@
     },
     "vnetName": {
       "type": "string",
-      "defaultValue": "datameshmanager-vnet",
+      "defaultValue": "entropydata-vnet",
       "metadata": {
         "description": "The virtual network name."
       }

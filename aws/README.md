@@ -1,10 +1,10 @@
 # AWS CloudFormation Template
 
-The cloud formation template for the AWS infrastructure is available in `template.yaml` and in a public S3 bucket: https://datamesh-manager-ce.s3.us-east-1.amazonaws.com/template.yaml.
+The cloud formation template for the AWS infrastructure is available in `template.yaml` and in a public S3 bucket: https://entropy-data-ce.s3.us-east-1.amazonaws.com/template.yaml.
 
-It uses the Docker Image hosted on AWS Public ECR: `public.ecr.aws/z3b7c0x3/datamesh-manager-ce:latest` (see more on https://gallery.ecr.aws/z3b7c0x3/datamesh-manager-ce).
+It uses the Docker Image hosted on AWS Public ECR: `public.ecr.aws/z3b7c0x3/entropy-data-ce:latest` (see more on https://gallery.ecr.aws/z3b7c0x3/entropy-data-ce).
 
-[Quick-Create Link](https://eu-central-1.console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/create/review?templateURL=https://datamesh-manager-ce.s3.us-east-1.amazonaws.com/template.yaml)
+[Quick-Create Link](https://eu-central-1.console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/create/review?templateURL=https://entropy-data-ce.s3.us-east-1.amazonaws.com/template.yaml)
 
 ## Constraints
 
@@ -16,7 +16,7 @@ Using a public image from Docker Hub in AWS AppRunner comes with many constraint
 The alternative requires a private ECR repository, which either gets the image pushed or configures a pull-through cache.
 The pull-through cache always requires credentials configured in the AWS Secrets Manager, even for public docker images on Docker Hub.
 
-Because of that, the CloudFormation template uses `public.ecr.aws/z3b7c0x3/datamesh-manager-ce:latest` from ECR Public. But be aware that it does not automatically upgrade to newer versions of the Data Mesh Manager!
+Because of that, the CloudFormation template uses `public.ecr.aws/z3b7c0x3/entropy-data-ce:latest` from ECR Public. But be aware that it does not automatically upgrade to newer versions of the Data Mesh Manager!
 
 ## Testing the CloudFormation Template
 
