@@ -48,7 +48,7 @@ Now you can access the Entropy Data (Community Edition) at [http://localhost:808
 
 ## Configuration
 
-Configure an external database and mail server for production use.
+Configure an external database and mail server for production use. Find all environment variables in the [documentation](https://docs.entropy-data.com/configuration).
 
 | Environment Variable                             | Example                                    | Description                                                                                 |
 |--------------------------------------------------|--------------------------------------------|---------------------------------------------------------------------------------------------|
