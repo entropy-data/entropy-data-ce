@@ -27,6 +27,7 @@ services:
     # View messages in the web UI http://localhost:8025
     image: mailhog/mailhog:latest
     restart: always
+    platform: linux/amd64
     ports:
       - "8025:8025"
 volumes:
