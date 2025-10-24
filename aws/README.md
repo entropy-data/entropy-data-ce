@@ -18,6 +18,25 @@ The pull-through cache always requires credentials configured in the AWS Secrets
 
 Because of that, the CloudFormation template uses `public.ecr.aws/s4e5k7s9/entropy-data-ce:latest` from ECR Public. But be aware that it does not automatically upgrade to newer versions of the Entropy Data!
 
+## Running the CloudFormation Template from CLI
+
+```
+aws cloudformation create-stack \
+  --stack-name entropy-data-stack \
+  --template-body file://./template.yaml \
+  --parameters \
+    ParameterKey=ImageIdentifier,ParameterValue=public.ecr.aws/s4e5k7s9/entropy-data-ce:latest \
+    ParameterKey=DBInstanceIdentifier,ParameterValue=entropy-data-postgres \
+    ParameterKey=DBName,ParameterValue=postgres \
+    ParameterKey=SuperAdmins,ParameterValue= \
+    ParameterKey=SMTPHost,ParameterValue=email-smtp.eu-central-1.amazonaws.com \
+    ParameterKey=SMTPPort,ParameterValue=587 \
+    ParameterKey=SMTPUsername,ParameterValue=xxx \
+    ParameterKey=SMTPPassword,ParameterValue=xxx \
+    ParameterKey=MailFrom,ParameterValue=support@example.com \  
+  --region eu-central-1
+```
+
 ## Testing the CloudFormation Template
 
 This is done automatically via GitHub Actions to ensure that the cloud formation template still works.

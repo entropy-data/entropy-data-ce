@@ -14,16 +14,6 @@ Parameters:
     Type: String
     Default: postgres
     Description: 'Initial database name'
-  DBUsername:
-    Type: String
-    Default: myusername
-    NoEcho: true
-    Description: 'Master database username'
-  DBPassword:
-    Type: String
-    Default: mypassword
-    NoEcho: true
-    Description: 'Master database password'
   DBInstanceClass:
     Type: String
     Default: db.t3.micro
@@ -74,67 +64,187 @@ Parameters:
 
 Resources:
 
-  MyVPC:
+  DBSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: 'RDS PostgreSQL master credentials'
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "entropydatadbadmin"}'
+        GenerateStringKey: 'password'
+        PasswordLength: 32
+        ExcludeCharacters: '"@/\\'
+      Tags:
+        - Key: Application
+          Value: entropy-data
+
+  EntropyDataVPC:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: 10.0.0.0/16
       EnableDnsSupport: true
       EnableDnsHostnames: true
+      Tags:
+        - Key: Application
+          Value: entropy-data
 
-  PublicSubnet1:
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Application
+          Value: entropy-data
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref EntropyDataVPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicSubnet:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref MyVPC
+      VpcId: !Ref EntropyDataVPC
       CidrBlock: 10.0.1.0/24
       MapPublicIpOnLaunch: true
       AvailabilityZone: !Select [ 0, !GetAZs "" ]
+      Tags:
+        - Key: Application
+          Value: entropy-data
 
-  PublicSubnet2:
+  NatGatewayEIP:
+    Type: AWS::EC2::EIP
+    DependsOn: AttachGateway
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Application
+          Value: entropy-data
+
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGatewayEIP.AllocationId
+      SubnetId: !Ref PublicSubnet
+      Tags:
+        - Key: Application
+          Value: entropy-data
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref EntropyDataVPC
+      Tags:
+        - Key: Application
+          Value: entropy-data
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref MyVPC
-      CidrBlock: 10.0.2.0/24
-      MapPublicIpOnLaunch: true
+      VpcId: !Ref EntropyDataVPC
+      CidrBlock: 10.0.3.0/24
+      MapPublicIpOnLaunch: false
+      AvailabilityZone: !Select [ 0, !GetAZs "" ]
+      Tags:
+        - Key: Application
+          Value: entropy-data
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref EntropyDataVPC
+      CidrBlock: 10.0.4.0/24
+      MapPublicIpOnLaunch: false
       AvailabilityZone: !Select [ 1, !GetAZs "" ]
+      Tags:
+        - Key: Application
+          Value: entropy-data
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref EntropyDataVPC
+      Tags:
+        - Key: Application
+          Value: entropy-data
+
+  PrivateRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway
+
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet1
+      RouteTableId: !Ref PrivateRouteTable
+
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet2
+      RouteTableId: !Ref PrivateRouteTable
+
+  AppRunnerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Security group for App Runner VPC Connector"
+      VpcId: !Ref EntropyDataVPC
+      Tags:
+        - Key: Application
+          Value: entropy-data
 
   RDSSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: 'Security group for RDS instance'
-      VpcId: !Ref MyVPC
+      VpcId: !Ref EntropyDataVPC
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 5432
           ToPort: 5432
-          CidrIp: 0.0.0.0/0
+          SourceSecurityGroupId: !Ref AppRunnerSecurityGroup
+      Tags:
+        - Key: Application
+          Value: entropy-data
 
-  AppRunnerSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: "Security group for App Runner"
-      VpcId: !Ref MyVPC
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 8080
-          CidrIp: 0.0.0.0/0 # Allow public access
-
-  MyVpcConnector:
+  EntropyDataAppRunnerVpcConnector:
     Type: AWS::AppRunner::VpcConnector
     Properties:
       Subnets:
-        - !Ref PublicSubnet1
-        - !Ref PublicSubnet2
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
       SecurityGroups:
         - !Ref AppRunnerSecurityGroup
+      Tags:
+        - Key: Application
+          Value: entropy-data
 
-  MyDBSubnetGroup:
+  EntropyDataDBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
       DBSubnetGroupDescription: "Subnet group for RDS"
       SubnetIds:
-        - !Ref PublicSubnet1
-        - !Ref PublicSubnet2
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      Tags:
+        - Key: Application
+          Value: entropy-data
 
   RDSInstance:
     Type: AWS::RDS::DBInstance
@@ -142,18 +252,28 @@ Resources:
       DBInstanceIdentifier: !Ref DBInstanceIdentifier
       DBName: !Ref DBName
       Engine: postgres
-      MasterUsername: !Ref DBUsername
-      MasterUserPassword: !Ref DBPassword
+      MasterUsername: !Sub '{{resolve:secretsmanager:${DBSecret}::username}}'
+      MasterUserPassword: !Sub '{{resolve:secretsmanager:${DBSecret}::password}}'
       DBInstanceClass: !Ref DBInstanceClass
       AllocatedStorage: !Ref AllocatedStorage
       PubliclyAccessible: false
       VPCSecurityGroups:
         - !GetAtt RDSSecurityGroup.GroupId
-      DBSubnetGroupName: !Ref MyDBSubnetGroup
+      DBSubnetGroupName: !Ref EntropyDataDBSubnetGroup
       BackupRetentionPeriod: 7
       StorageType: gp2
       MultiAZ: false
       DeletionProtection: false
+      Tags:
+        - Key: Application
+          Value: entropy-data
+
+  SecretRDSInstanceAttachment:
+    Type: AWS::SecretsManager::SecretTargetAttachment
+    Properties:
+      SecretId: !Ref DBSecret
+      TargetId: !Ref RDSInstance
+      TargetType: AWS::RDS::DBInstance
 
   AppRunnerService:
     Type: AWS::AppRunner::Service
@@ -167,12 +287,16 @@ Resources:
             RuntimeEnvironmentVariables:
               - Name: APPLICATION_SUPERADMINS
                 Value: !Ref SuperAdmins
+              - Name: APPLICATION_DATACONTRACT_SPECIFICATIONS
+                Value: odcs
+              - Name: APPLICATION_DATAPRODUCT_SPECIFICATIONTYPES
+                Value: odps
               - Name: SPRING_DATASOURCE_URL
                 Value: !Sub 'jdbc:postgresql://${RDSInstance.Endpoint.Address}:5432/${DBName}'
               - Name: SPRING_DATASOURCE_USERNAME
-                Value: !Ref DBUsername
+                Value: !Sub '{{resolve:secretsmanager:${DBSecret}::username}}'
               - Name: SPRING_DATASOURCE_PASSWORD
-                Value: !Ref DBPassword
+                Value: !Sub '{{resolve:secretsmanager:${DBSecret}::password}}'
               - Name: SPRING_MAIL_HOST
                 Value: !Ref SMTPHost
               - Name: SPRING_MAIL_PORT
@@ -199,8 +323,8 @@ Resources:
         UnhealthyThreshold: 2
       NetworkConfiguration:
         EgressConfiguration:
-          EgressType: "DEFAULT"
-          VpcConnectorArn: !Ref MyVpcConnector
+          EgressType: "VPC"
+          VpcConnectorArn: !Ref EntropyDataAppRunnerVpcConnector
 
 
 Outputs:
@@ -210,3 +334,6 @@ Outputs:
   AppRunnerServiceURL:
     Description: 'URL of the App Runner Service'
     Value: !GetAtt AppRunnerService.ServiceUrl
+  DBSecretArn:
+    Description: 'ARN of the Secrets Manager secret containing DB credentials'
+    Value: !Ref DBSecret
