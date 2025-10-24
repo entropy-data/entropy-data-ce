@@ -61,6 +61,10 @@ Parameters:
     Type: String
     Default: 'support@example.com'
     Description: 'Email address to send emails from'
+  ApplicationHostWeb:
+    Type: String
+    Default: 'https://entropydata.example.com'
+    Description: 'The web application URL. Used in emails to build links to the application.'
 
 Resources:
 
@@ -285,6 +289,8 @@ Resources:
           ImageRepositoryType: 'ECR_PUBLIC'
           ImageConfiguration:
             RuntimeEnvironmentVariables:
+              - Name: APPLICATION_HOST_WEB
+                Value: !Ref ApplicationHostWeb
               - Name: APPLICATION_SUPERADMINS
                 Value: !Ref SuperAdmins
               - Name: APPLICATION_DATACONTRACT_SPECIFICATIONS
@@ -332,8 +338,8 @@ Outputs:
     Description: 'RDS Instance Endpoint'
     Value: !GetAtt RDSInstance.Endpoint.Address
   AppRunnerServiceURL:
-    Description: 'URL of the App Runner Service'
-    Value: !GetAtt AppRunnerService.ServiceUrl
+    Description: 'URL of the App Runner Service. Use this to set APPLICATION_HOST_WEB if not already configured.'
+    Value: !Sub 'https://${AppRunnerService.ServiceUrl}'
   DBSecretArn:
     Description: 'ARN of the Secrets Manager secret containing DB credentials'
     Value: !Ref DBSecret

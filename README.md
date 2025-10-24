@@ -52,7 +52,7 @@ Configure an external database and mail server for production use. Find all envi
 
 | Environment Variable                             | Example                                    | Description                                                                                 |
 |--------------------------------------------------|--------------------------------------------|---------------------------------------------------------------------------------------------|
-| APPLICATION_HOST_WEB                             | `http://localhost:8081`                    | The host of the application, used e.g., in email templates build URLs to Entropy Data. |
+| APPLICATION_HOST_WEB                             | `http://localhost:8081`                    | The web application's URL. Used in emails to build a link to the application.          |
 | APPLICATION_MAIL_FROM                            | `Entropy Data <noreply@example.com>`  | The sender email address for Entropy Data emails.                                      |
 | SPRING_DATASOURCE_URL                            | `jdbc:postgresql://postgres:5432/postgres` | JDBC URL of the database                                                                    |
 | SPRING_DATASOURCE_USERNAME                       | `postgres`                                 | Login username of the database                                                              |

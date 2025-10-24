@@ -22,7 +22,7 @@ Because of that, the CloudFormation template uses `public.ecr.aws/s4e5k7s9/entro
 
 ```
 aws cloudformation create-stack \
-  --stack-name entropy-data-stack \
+  --stack-name entropy-data \
   --template-body file://./template.yaml \
   --parameters \
     ParameterKey=ImageIdentifier,ParameterValue=public.ecr.aws/s4e5k7s9/entropy-data-ce:latest \
@@ -41,18 +41,10 @@ aws cloudformation create-stack \
 
 This is done automatically via GitHub Actions to ensure that the cloud formation template still works.
 
-### Installation of Taskcat
-
-```bash
-python3.11 -m venv venv
-source venv/bin/activate
-
-pip install taskcat
-```
 
 ### Running Taskcat
 
 ```bash
 # requires AWS credentials via environment variables
-taskcat test run
+uvx taskcat test run
 ```
