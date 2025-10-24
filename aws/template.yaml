@@ -2,13 +2,17 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: 'CloudFormation template to provision the Entropy Data on AWS App Runner with an Amazon RDS PostgreSQL database'
 
 Parameters:
+  ImageIdentifier:
+    Type: String
+    Default: 'public.ecr.aws/s4e5k7s9/entropy-data-ce:latest'
+    Description: 'Container image identifier for the App Runner service'
   DBInstanceIdentifier:
     Type: String
     Default: entropy-data-postgres
-    Description: 'Database instance identifier'
+    Description: 'Database instance identifier (this RDS database will be created)'
   DBName:
     Type: String
-    Default: mydatabase
+    Default: postgres
     Description: 'Initial database name'
   DBUsername:
     Type: String
@@ -26,8 +30,8 @@ Parameters:
     Description: 'Database instance class'
   SuperAdmins:
     Type: String
-    Default: 'mail@example.com'
-    Description: 'Super admins can do anything in Entropy Data'
+    Default: ''
+    Description: 'Enter the email address of super admin. Super admins can do anything in Entropy Data. Can changed later as environment variable.'
   AllocatedStorage:
     Type: Number
     Default: "20"
@@ -46,7 +50,7 @@ Parameters:
     Description: 'SMTP server port'
   SMTPUsername:
     Type: String
-    Default: 'apikey'
+    Default: ''
     Description: 'SMTP server username'
   SMTPPassword:
     Type: String
@@ -157,7 +161,7 @@ Resources:
       ServiceName: !Ref AppRunnerServiceName
       SourceConfiguration:
         ImageRepository:
-          ImageIdentifier: public.ecr.aws/s4e5k7s9/entropy-data-ce:latest
+          ImageIdentifier: !Ref ImageIdentifier
           ImageRepositoryType: 'ECR_PUBLIC'
           ImageConfiguration:
             RuntimeEnvironmentVariables:
@@ -195,7 +199,7 @@ Resources:
         UnhealthyThreshold: 2
       NetworkConfiguration:
         EgressConfiguration:
-          EgressType: "VPC"
+          EgressType: "DEFAULT"
           VpcConnectorArn: !Ref MyVpcConnector
 
 
